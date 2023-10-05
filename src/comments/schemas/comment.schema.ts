@@ -5,7 +5,7 @@ import * as mongoose from 'mongoose';
 export const CommentSchema = new mongoose.Schema({
   text: String,
   author: String,
-  parentCommentId: {
+  parentPostId: {
     type: mongoose.Types.ObjectId,
     default: null,
   },
@@ -18,5 +18,5 @@ export const CommentSchema = new mongoose.Schema({
 export interface Comment extends mongoose.Document {
   text: string;
   author: string;
-  parentCommentId: mongoose.Types.ObjectId | null;
+  parentPostId: mongoose.Types.ObjectId | null;
 }
