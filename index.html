@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comments</title>
+</head>
+<body>
+    <h1>Comments</h1>
+    <ul id="comments-list">
+        <!-- Comments will be displayed here -->
+    </ul>
+
+    <script>
+        async function fetchAndDisplayComments() {
+            try {
+                const response = await fetch('http://localhost:3000/api/comments'); // Update the URL as needed
+                const comments = await response.json();
+                const commentsList = document.getElementById('comments-list');
+    
+                commentsList.innerHTML = ''; // Clear existing comments
+    
+                function displayComments(comments, parentElement) {
+                    comments.forEach(comment => {
+                        if (comment.parentCommentId === null) {
+                            // Create a list item for top-level comments
+                            const listItem = document.createElement('li');
+                            listItem.textContent = `${comment.author}: ${comment.text}`;
+                            parentElement.appendChild(listItem);
+    
+                            // Create a nested <ul> for replies to this comment
+                            const repliesList = document.createElement('ul');
+                            listItem.appendChild(repliesList);
+    
+                            // Find and display replies recursively
+                            displayReplies(comment._id, repliesList);
+                        }
+                    });
+                }
+    
+                function displayReplies(parentCommentId, parentElement) {
+                    const replies = comments.filter(comment => comment.parentCommentId === parentCommentId);
+    
+                    replies.forEach(reply => {
+                        // Create a list item for the reply
+                        const listItem = document.createElement('li');
+                        listItem.textContent = `${reply.author}: ${reply.text}`;
+                        parentElement.appendChild(listItem);
+    
+                        // Create a nested <ul> for replies to this reply
+                        const repliesList = document.createElement('ul');
+                        listItem.appendChild(repliesList);
+    
+                        // Find and display nested replies recursively
+                        displayReplies(reply._id, repliesList);
+                    });
+                }
+    
+                displayComments(comments, commentsList);
+            } catch (error) {
+                console.error('Error fetching comments:', error);
+            }
+        }
+    
+        window.addEventListener('load', fetchAndDisplayComments);
+    </script>
+      
+    
+</body>
+</html>
